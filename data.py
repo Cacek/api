@@ -2,7 +2,7 @@ import requests
 
 
 def get_data_from_api():
-    url = "https://randomuser.me/api/?results=10"
+    url = "https://randomuser.me/api/?results=10" #Przykladowe API
     response = requests.get(url)
     api_data = response.json()
     return api_data["results"]
