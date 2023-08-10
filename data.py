@@ -12,6 +12,9 @@ class UserData:
     city: str
     country: str
 
+    def __str__(self):
+        return f"Name: {self.first_name} {self.last_name}\nEmail: {self.email}\nLocation: {self.city}, {self.country}\n"
+
 class APIClient:
     def __init__(self) -> None:
         self.base_url: str = "https://randomuser.me/api/"
