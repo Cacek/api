@@ -15,7 +15,7 @@ class User(db.Model):
     username = db.Column(db.String(30), unique=False, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
 
-    def json(self):
+    def get_json_data(self):
         return {
             'id': self.id,
             'username': self.username,
@@ -92,7 +92,7 @@ def create_user():
 def get_users():
     try:
         users = db_adapter.get_all(User)
-        return make_response(jsonify([user.json() for user in users]), 200)
+        return make_response(jsonify([user.get_json_data() for user in users]), 200)
     except Exception as e:
         return make_response(jsonify({'message': 'error getting users'}), 500)
 
@@ -102,7 +102,7 @@ def get_user(id):
     try:
         user = db_adapter.get_by_id(User, id)
         if user:
-            return make_response(jsonify(user.json()), 200)
+            return make_response(jsonify(user.get_json_data()), 200)
         return make_response(jsonify({'message': 'user not found'}), 404)
     except Exception as e:
         return make_response(jsonify({'message': 'error getting user'}), 500)
@@ -117,7 +117,7 @@ def update_user(id):
             user.username = data['username']
             user.email = data['email']
             db_adapter.update(user)
-            return make_response(jsonify(user.json()), 200)
+            return make_response(jsonify(user.get_json_data()), 200)
         return make_response(jsonify({'message': 'user not found'}), 404)
     except Exception as e:
         return make_response(jsonify({'message': 'error updating user'}), 500)
