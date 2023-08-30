@@ -52,8 +52,8 @@ class PostgreSQLAdapter(AbstractDatabaseAdapter):
         db.session.add(entity)
         db.session.commit()
 
-    def get_all(self, entity_type):
-        return entity_type.query.all()
+    def get_all(self, entity_type, page=1, per_page=10):
+        return entity_type.query.paginate(page=page, per_page=per_page, error_out=False)
 
     def get_by_id(self, entity_type, entity_id):
         return entity_type.query.get(entity_id)
@@ -91,8 +91,17 @@ def create_user():
 @app.route('/users', methods=['GET'])
 def get_users():
     try:
-        users = db_adapter.get_all(User)
-        return make_response(jsonify([user.get_json_data() for user in users]), 200)
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        pagination = db_adapter.get_all(User, page, per_page)
+        users = pagination.items
+
+        return make_response(jsonify({
+            'users': [user.get_json_data() for user in users],
+            'total_pages': pagination.pages,
+            'current_page': pagination.page
+        })), 200
     except Exception as e:
         return make_response(jsonify({'message': 'error getting users'}), 500)
 
